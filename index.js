@@ -24,7 +24,7 @@ app.use(formidable());
 app.use("/api", API_routes);
 
 app.use(history());
-app.use("/", express.static(path.join(__dirname, "/chat-react/build")));
+app.use("/", express.static(path.join(__dirname, "/dist")));
 
 const server = app.listen(app.get("PORT"), () => { log(`The chat server is listening on port ${app.get("PORT")}`) });
 const io = require("socket.io")(server, process.env.MODE == "development" ? {cors: { origin: "*", methods: "*" }} : undefined);
