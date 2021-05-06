@@ -3,13 +3,16 @@ const io = socketInstance;
 
 const { imageResolve, userMemory, clearMemory, nameResolve } = require("../utils/resolvers");
 const { appendMessage } = require("../utils/messageQueue");
+const { joinMessage, disconnectionMessage } = require("../utils/randomMessage");
 
 io.on("connection", client => {
    
     client.on("join", (data) => {
         userMemory(data, client.id);
-        io.to(client.id).emit("joined", { msg: `Welcome ${data.user} (welcome randomMessage)` });
-        client.broadcast.emit("event", { msg: `${data.user} (join randomMessage)` });
+        let message = joinMessage(data.user);
+        io.to(client.id).emit("joined", { msg: `Welcome ${data.user}, hope you to 
+            enjoy the party. Keep up the good ambient.` });
+        client.broadcast.emit("event", { msg: message });
     });
 
     client.on("message", (data) => {
@@ -36,8 +39,9 @@ io.on("connection", client => {
     client.on("disconnect", () => {
         let user = nameResolve(client.id);
         if(user) {
-            appendMessage({ msg: `${nameResolve(client.id)} (disconnection randomMessage)` });
-            io.sockets.emit("event", { msg: `${nameResolve(client.id)} (disconnection randomMessage)` });
+            let message = disconnectionMessage(user);
+            appendMessage({ msg: message });
+            io.sockets.emit("event", { msg: message });
             clearMemory(client.id);
         }
     });
